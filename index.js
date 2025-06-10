@@ -8,10 +8,11 @@ const socket = require('socket.io')
 const messageModel = require('./Models/Chats.model')
 
 
+const useOrigin = 'https://glammx.onrender.com'
 
 
 // middlewares
-app.use(cors({origin: "*"}))
+app.use(cors({origin: useOrigin}))
 app.use(express.json({limit:"50mb"}))
 app.use('/', projectroutes)
 
