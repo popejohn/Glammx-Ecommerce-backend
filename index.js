@@ -8,7 +8,7 @@ const socket = require('socket.io')
 const messageModel = require('./Models/Chats.model')
 
 
-const useOrigin = 'https://glammx.onrender.com'
+const useOrigin = 'https://glammx-ecommerce-backend.onrender.com'
 
 
 // middlewares
