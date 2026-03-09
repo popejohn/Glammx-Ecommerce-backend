@@ -57,7 +57,7 @@ io.on("connection", async(socket) => {
         }
 
          // Send all active users
-        socket.emit('active_users', (activeUsers))
+        io.emit('active_users', (activeUsers))
         
     })
 
@@ -70,8 +70,8 @@ io.on("connection", async(socket) => {
             recipient,
             message
         }
-        socket.emit('user_response', (usermessage))
         const newMessage = await messageModel.create({sender, recipient, message })
+        io.emit('user_response', (usermessage))
     }) //Works
 
     
@@ -86,7 +86,7 @@ io.on("connection", async(socket) => {
     // Gets support's response to be sent to selected user support is chatting
     socket.on('support_response', async(supportResponse) => { 
         const newSupportResponse = await messageModel.create(supportResponse)
-        socket.emit('response', (supportResponse))
+        io.emit('response', (supportResponse))
     })
 })
 
