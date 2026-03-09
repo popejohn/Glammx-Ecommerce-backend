@@ -40,11 +40,14 @@ const io = socket(portconnection, {
 io.on("connection", async(socket) => {
     console.log('a user connected')
 
+    // Send all active users on connection
+    io.emit('active_users', (activeUsers))
+
     socket.on('user_chats', async(userId) => {
     
         const existinguser = activeUsers.filter((user) => user.email === userId.email)
         if (!existinguser.length){
-          activeUsers.push(userId)
+          activeUsers.push({...userId, socketId: socket.id})
         
         }
         const allChats = await messageModel.find()
@@ -54,12 +57,9 @@ io.on("connection", async(socket) => {
         }
 
          // Send all active users
-        socket.emit('active_users', (activeUsers))
+        io.emit('active_users', (activeUsers))
         
     })
-
-    // Send all active users
-    socket.emit('active_users', (activeUsers))
 
     socket.on('send_message', async({sender, recipient, message}) =>{
         const usermessage = {
@@ -67,8 +67,8 @@ io.on("connection", async(socket) => {
             recipient,
             message
         }
-        socket.emit('user_response', (usermessage))
         const newMessage = await messageModel.create({sender, recipient, message })
+        io.emit('user_response', (usermessage))
     }) //Works
 
     
@@ -83,7 +83,12 @@ io.on("connection", async(socket) => {
     // Gets support's response to be sent to selected user support is chatting
     socket.on('support_response', async(supportResponse) => { 
         const newSupportResponse = await messageModel.create(supportResponse)
-        socket.emit('response', (supportResponse))
+        io.emit('response', (supportResponse))
+    })
+
+    socket.on('disconnect', () => {
+        activeUsers = activeUsers.filter(user => user.socketId !== socket.id)
+        io.emit('active_users', activeUsers)
     })
 })
 
