@@ -8,11 +8,13 @@ const socket = require('socket.io')
 const messageModel = require('./Models/Chats.model')
 
 
-const useOrigin = 'https://glammx-ecommerce-backend.onrender.com'
-
+// allowed origins for CORS (frontend + backend)
+const allowedOrigins = [
+    'https://glammx-ecommerce-backend.onrender.com'
+];
 
 // middlewares
-app.use(cors({origin: useOrigin}))
+app.use(cors({ origin: allowedOrigins }))
 app.use(express.json({limit:"50mb"}))
 app.use('/', projectroutes)
 
@@ -34,7 +36,11 @@ const portconnection = app.listen(port, () => {
 const activeUsers = []
 
 const io = socket(portconnection, {
-    cors: {origin: "*"}
+    cors: {
+        origin: allowedOrigins,
+        methods: ["GET", "POST"],
+        credentials: true
+    }
 })
 
 io.on("connection", async(socket) => {
